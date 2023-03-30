@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unique set generator</title>
+</head>
+<body>
+    <form method="post">
+        <label for="input_number">Enter 8-digit number:</label>
+        <input type="number" id="input_number" name="input_number" min="10000000" max="99999999">
+        <input type="submit" value="Generate">
+    </form>
+    {% if selected_items %}
+    <p>Generated set:</p>
+    <ul>
+        {% for item in selected_items %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</body>
+</html>
