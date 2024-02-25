@@ -45,30 +45,37 @@
                     return;
                 }
 
-                // Disable the submit button to prevent multiple submissions
                 $("#submitBtn").prop('disabled', true);
                 $("#loading").show();
+                $("#outputDiv").hide();
                 $.ajax({
                     type: 'POST',
                     url: '/api/generate',
                     data: { 'input_number': inputNumber },
                     success: function (data) {
+                        $("#loading").hide();
                         $("#downloadBtn").attr("href", data.download_url).show();
                         $("#outputDiv").show();
-                        $("#loading").hide();
 
-                        // Once the download button is shown, re-enable the submit button
-                        // and attach a click event to the download button to reset the form
-                        $("#downloadBtn").click(function () {
-                            $(this).hide(); // Hide the download button
-                            $("#submitBtn").prop('disabled', false); // Re-enable the submit button
-                            $("#inputNumber").val(''); // Clear the input field
+                        $("#downloadBtn").off("click").on("click", function (e) {
+                            // Prevent the default action to handle it with AJAX
+                            e.preventDefault();
+                            var downloadUrl = $(this).attr("href");
+
+                            // Attempt to download the file
+                            window.location.href = downloadUrl;
+
+                            // After initiating download, reset the UI
+                            $("#downloadBtn").hide();
+                            $("#submitBtn").prop('disabled', false);
+                            $("#inputNumber").val('');
+                            $("#outputDiv").hide();
                         });
                     },
                     error: function () {
                         alert("An error occurred while generating the dataset. Please try again later.");
                         $("#loading").hide();
-                        $("#submitBtn").prop('disabled', false); // Re-enable the submit button on error
+                        $("#submitBtn").prop('disabled', false);
                     }
                 });
             });
