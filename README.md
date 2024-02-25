@@ -22,8 +22,8 @@ These instructions will get you a copy of the project up and running on your loc
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/your-username/your-project-name.git
-cd your-project-name
+git clone https://github.com/GitarthVaishnav/A1App.git
+cd A1App
 ```
 
 2. **Setup Virtual Environment and Install Dependencies**
@@ -68,7 +68,7 @@ To contribute to this project, please create a branch and submit a pull request 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
