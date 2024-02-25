@@ -1,14 +1,15 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory, url_for
-import random
-import hashlib
-import os
-import shutil
 import base64
 import csv
-import pytz
+import hashlib
+import os
+import random
+import shutil
 from datetime import datetime
 
-app = Flask(__name__)
+import pytz
+from flask import Flask, jsonify, render_template, request, send_from_directory, url_for
+
+dlcnn_a1_datagen_app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 NUMBERS_CSV = os.path.join(BASE_DIR, "numbers.csv")
@@ -135,12 +136,12 @@ def zip_directory(directory_path):
         return None
 
 
-@app.route("/")
+@dlcnn_a1_datagen_app.route("/")
 def index():
     return render_template("index.html")
 
 
-@app.route("/api/generate", methods=["POST"])
+@dlcnn_a1_datagen_app.route("/api/generate", methods=["POST"])
 def generate():
     try:
         input_number = request.form.get("input_number", type=int)
@@ -158,7 +159,7 @@ def generate():
         return jsonify({"error": str(e)}), 500
 
 
-@app.after_request
+@dlcnn_a1_datagen_app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Expires"] = 0
@@ -166,13 +167,9 @@ def after_request(response):
     return response
 
 
-@app.route("/download/<filename>")
+@dlcnn_a1_datagen_app.route("/download/<filename>")
 def download_file(filename):
     try:
         return send_from_directory(STUDENT_DATASET_FOLDER, filename, as_attachment=True)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
