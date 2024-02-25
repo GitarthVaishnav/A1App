@@ -8,6 +8,8 @@
 
 # Specific project directories
 **/extracted_images-1/*
+**/numbers.csv
+**/Student_Dataset/*
 
 # Python bytecode
 __pycache__/
