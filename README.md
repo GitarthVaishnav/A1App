@@ -47,20 +47,23 @@ Before running the application, ensure all configurations are set correctly in `
 Start the Flask application with:
 
 ```bash
-poetry run flask run
+poetry run python -m dlcnn_a1_dataset_generator
 ```
 
-The application will be available at `http://localhost:5000`.
+The application will be available at `http://localhost:8080`.
 
 ## Usage
 
 1. **Access the Web Interface**
 
-Navigate to `http://localhost:5000` in your web browser to access the dataset generator.
+Navigate to `http://localhost:8080` in your web browser to access the dataset generator.
 
 2. **Generate Dataset**
 
 Enter your 8-digit student ID in the input form and click the submit button. The application will process your request and provide a download link for your custom dataset.
+
+## EC2 Deployment:
+[Deployment Guide](https://github.com/GitarthVaishnav/A1App/DeploymentGuide.md)
 
 ## Development
 
