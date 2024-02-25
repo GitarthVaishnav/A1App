@@ -63,7 +63,7 @@ Navigate to `http://localhost:8080` in your web browser to access the dataset ge
 Enter your 8-digit student ID in the input form and click the submit button. The application will process your request and provide a download link for your custom dataset.
 
 ## EC2 Deployment:
-[Deployment Guide](https://github.com/GitarthVaishnav/A1App/DeploymentGuide.md)
+[Deployment Guide](https://github.com/GitarthVaishnav/A1App/blob/main/DeploymentGuide.md)
 
 ## Development
 
