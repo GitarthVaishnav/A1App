@@ -61,7 +61,14 @@ Download the master dataset from google drive and save it at approprite location
 ```bash
 cd dlcnn_a1_dataset_generator
 gdown 'https://drive.google.com/uc?id=<file_id>'
+```
+
+Unzip and remove unwanted file:
+
+```bash
 unzip filename.zip
+rm -r __MACOSX
+rm filename.zip
 cd ..
 ```
 
