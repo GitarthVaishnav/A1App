@@ -10,153 +10,169 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-dir_path = None
-zip_path = None
-d = False
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+NUMBERS_CSV = os.path.join(BASE_DIR, "numbers.csv")
+STUDENT_DATASET_FOLDER = os.path.join(BASE_DIR, "Student_Dataset")
+EXTRACTED_IMAGES_DIR = os.path.join(BASE_DIR, "extracted_images-1")
+
 
 def save_number_to_csv(number):
-    BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-    filename = os.path.join(BASE_DIR,'numbers.csv')
+    try:
+        # Ensure the existence of the header
+        if not os.path.isfile(NUMBERS_CSV):
+            with open(NUMBERS_CSV, "w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(["StudentID", "Timestamp"])
 
-    # Check if the file exists
-    if not os.path.isfile(filename):
-        # If the file does not exist, create a new one and write the headers
-        with open(filename, "w") as f:
+        # Append the new entry
+        with open(NUMBERS_CSV, "a", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["StudentID", "Timestamp"])
-
-    # Open the file in append mode and write the number and timestamp
-    with open(filename, "a") as f:
-        writer = csv.writer(f)
-        writer.writerow([number, datetime.now(pytz.timezone('Australia/Sydney')).strftime('%Y-%m-%d %H:%M:%S %Z%z')])
-
-    print("ID saved successfully.")
-
+            writer.writerow(
+                [
+                    number,
+                    datetime.now(pytz.timezone("Australia/Sydney")).strftime(
+                        "%Y-%m-%d %H:%M:%S %Z%z"
+                    ),
+                ]
+            )
+        print("ID saved successfully.")
+    except Exception as e:
+        print(f"Error saving number to CSV: {e}")
 
 
 def generate_seed(input_number):
-    input_number = str(input_number).encode()
-    save_number_to_csv(int(input_number))
-    return int(hashlib.sha256(input_number).hexdigest()[:16], 16) % (10 ** 8)
+    try:
+        input_number_str = str(input_number).encode()
+        save_number_to_csv(int(input_number_str))
+        return int(hashlib.sha256(input_number_str).hexdigest()[:16], 16) % (10**8)
+    except Exception as e:
+        print(f"Error generating seed: {e}")
+        return None
+
 
 def generate_unique_list(input_number):
     seed = generate_seed(input_number)
-    random.seed(seed)
-    big_set = ["leq", "geq", "theta", "neq", "[", "]", "pm", "div", "!", "beta", "pi", "alpha", "sum", "times", "sqrt", "=", "(", ")", "+", "-"]
-    unique_list = random.sample(big_set, 10)
-    return unique_list
+    if seed is not None:
+        random.seed(seed)
+        big_set = [
+            "leq",
+            "geq",
+            "theta",
+            "neq",
+            "[",
+            "]",
+            "pm",
+            "div",
+            "!",
+            "beta",
+            "pi",
+            "alpha",
+            "sum",
+            "times",
+            "sqrt",
+            "=",
+            "(",
+            ")",
+            "+",
+            "-",
+        ]
+        return random.sample(big_set, 10)
+    else:
+        return []
+
 
 def generate_dataset(unique_list, input_number):
-    # Set the parent directory path
-    BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-    parent_dir = os.path.join(BASE_DIR,'extracted_images-1')
+    try:
+        if not unique_list:
+            print("Empty unique list provided.")
+            return None
 
-    # Get a list of subdirectories in the parent directory
-    subdirs = [d for d in os.listdir(parent_dir) if os.path.isdir(os.path.join(parent_dir, d))]
+        folder_name = f"dataset_42028assg1_{str(input_number)}"
+        dataset_path = os.path.join(STUDENT_DATASET_FOLDER, folder_name)
 
-    # Print the parent directory path and number of subdirectories
-    print("Parent directory:", parent_dir)
-    print("Number of subdirectories:", len(subdirs))
+        for subdir in unique_list:
+            src_path = os.path.join(EXTRACTED_IMAGES_DIR, subdir)
+            if os.path.isdir(src_path):
+                dst_path = os.path.join(dataset_path, subdir)
+                os.makedirs(dst_path, exist_ok=True)
 
-    # Set the number of files to copy from each subdirectory
-    num_files = 500
+                seed = generate_seed(input_number)
+                random.seed(seed)
+                files = os.listdir(src_path)
+                selected_files = random.sample(files, min(500, len(files)))
 
-    # Set the list of subdirectories to copy
-    subdirs_to_copy = unique_list
+                for file in selected_files:
+                    shutil.copy2(
+                        os.path.join(src_path, file), os.path.join(dst_path, file)
+                    )
+            else:
+                print(f"{subdir} does not exist in {EXTRACTED_IMAGES_DIR}")
 
-    pth = ""
+        print("Files copied successfully!")
+        return dataset_path
+    except Exception as e:
+        print(f"Error generating dataset: {e}")
+        return None
 
-    # Iterate through each subdirectory
-    for subdir in subdirs_to_copy:
-        if subdir in subdirs:
-            # Set the source and destination paths
-            src_path = os.path.join(parent_dir, subdir)
-            student_data_folder = os.path.join(BASE_DIR, "Student_Dataset")
-            folder_name = f'dataset_42028assg1_{str(input_number)}'
-            pth = os.path.join(student_data_folder, folder_name)
-            dst_path = os.path.join(str(pth), subdir)
-
-            # Create the destination directory if it does not exist
-            if not os.path.exists(dst_path):
-                os.makedirs(dst_path)
-
-            # Get a list of files in the subdirectory
-            files = [f for f in os.listdir(src_path) if os.path.isfile(os.path.join(src_path, f))]
-
-            # Select a random set of files to copy
-            seed = generate_seed(input_number)
-            random.seed(seed)
-            selected_files = random.sample(files, num_files)
-
-            # Iterate through the selected files and copy them to the destination
-            for file in selected_files:
-                src_file = os.path.join(src_path, file)
-                dst_file = os.path.join(dst_path, file)
-                shutil.copy2(src_file, dst_file)
-        else:
-            print(f"{subdir} not exist in parent directory {parent_dir}")
-
-    print("Files copied successfully!")
-    return pth
 
 def zip_directory(directory_path):
-    global dir_path
-    dir_path = directory_path
-    # create a zip file with the directory
-    shutil.make_archive(directory_path, 'zip', directory_path)
-    # read the zip file and encode it as base64
-    filename = directory_path + '.zip'
-    with open(str(filename), 'rb') as f:
-        zip_bytes = f.read()
-    zip_base64 = base64.b64encode(zip_bytes).decode()
-    if os.path.exists(directory_path):
-        print("deleting the directory")
+    try:
+        if directory_path is None:
+            print("Invalid directory path provided for zipping.")
+            return None
+
+        shutil.make_archive(directory_path, "zip", directory_path)
+        filename = f"{directory_path}.zip"
+
+        with open(filename, "rb") as f:
+            zip_bytes = f.read()
+
+        zip_base64 = base64.b64encode(zip_bytes).decode()
         shutil.rmtree(directory_path)
-    return zip_base64
+        return zip_base64
+    except Exception as e:
+        print(f"Error zipping directory: {e}")
+        return None
 
-@app.route('/')
+
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/api/generate', methods=['POST'])
+
+@app.route("/api/generate", methods=["POST"])
 def generate():
-    input_number = request.form['input_number']
-    unique_list = generate_unique_list(input_number)
-    dataset_path = generate_dataset(unique_list, input_number)
-    zip_b64 = zip_directory(dataset_path)
-    # print(dataset_path)
-    filename = dataset_path.split('/')[-1] + '.zip'
-    # print(filename)
-    # Create a URL that can be used to download the zip file
-    download_url = url_for('download_file', filename=filename)
+    try:
+        input_number = request.form.get("input_number", type=int)
+        unique_list = generate_unique_list(input_number)
+        dataset_path = generate_dataset(unique_list, input_number)
 
-    response = jsonify({'download_url': download_url})
-    print(download_url)
-    return response, 200
+        if dataset_path:
+            zip_b64 = zip_directory(dataset_path)
+            filename = os.path.basename(dataset_path) + ".zip"
+            download_url = url_for("download_file", filename=filename)
+            return jsonify({"download_url": download_url}), 200
+        else:
+            return jsonify({"error": "Failed to generate dataset"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
-    global d
-    if d is True:
-        if os.path.exists(str(os.path.dirname(dir_path))+'/'+str(dir_path.split('/')[-1] + '.zip')):
-            print("Removing zip file.")
-            os.remove(str(os.path.dirname(dir_path))+'/'+str(dir_path.split('/')[-1] + '.zip'))
-            d = False
-    d = False
     return response
 
-@app.route(f'/download/<filename>')
+
+@app.route("/download/<filename>")
 def download_file(filename):
-    print("Trying to download file: ", filename)
-    print("Directory path: ", str(os.path.dirname(dir_path)))
-    # Serve the zip file as a download
-    response = send_from_directory(os.path.dirname(dir_path), filename, as_attachment=True)
-    global d
-    d = True
-    return response
+    try:
+        return send_from_directory(STUDENT_DATASET_FOLDER, filename, as_attachment=True)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
