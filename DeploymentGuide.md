@@ -25,7 +25,7 @@ Update the system and install necessary packages:
 ```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install python3.9
-sudo apt install python3-pip python3-dev git -y
+sudo apt install python3-pip python3-dev unzip git -y
 ```
 
 Install Poetry:
@@ -54,6 +54,15 @@ Install the project dependencies using Poetry:
 
 ```bash
 poetry install
+```
+
+Download the master dataset from google drive and save it at approprite location:
+
+```bash
+cd dlcnn_a1_dataset_generator
+gdown 'https://drive.google.com/uc?id=<file_id>'
+unzip filename.zip
+cd ..
 ```
 
 ## Running the Application as a Module
