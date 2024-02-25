@@ -9,7 +9,7 @@ This guide covers the deployment of a Flask application on a free tier AWS EC2 U
    - Choose an **Ubuntu Server** AMI (e.g., Ubuntu Server 20.04 LTS).
    - Select the `t2.micro` instance type for the AWS Free Tier.
    - Configure instance and storage settings as needed.
-   - Add security group rules to allow SSH (port 22) and HTTP (port 8080 or your desired port).
+   - Add security group rules to allow SSH (port 22) and HTTP (port 80) and TCP (port 8080 or your desired port). Allow for both ipv4 and ipv6.
    - Launch the instance and select or create a new key pair for SSH access.
 
 ## Preparing the EC2 Environment
