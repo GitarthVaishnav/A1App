@@ -1,4 +1,63 @@
-**/extracted_images-1/*
-**/extracted_images-1.zip
-**/venv
+# macOS system files
+.DS_Store
+**/.DS_Store
+**/__MACOSX
 
+# Virtual environment
+.venv/
+**/.venv/
+
+# Specific project directories
+**/extracted_images-1/*
+**/numbers.csv
+**/Student_Dataset/*
+**/extracted_images-1.zip
+
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+**/__pycache__/
+
+# Pytest
+.cache
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# VS Code settings
+.vscode/
+
+# PyCharm project files
+.idea/
+
+# Environment variables
+.env
+
+# Poetry lock file (if you're not sharing your libraries)
+# poetry.lock
+
+# Log files
+*.log
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Microsoft Office temporary files
+~$*
+
+# SQLite database files
+*.db
+*.sql
+*.sqlite
+*.sqlite3
+
+# Other files and directories to ignore
+tmp/
+temp/
