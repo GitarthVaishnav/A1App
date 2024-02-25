@@ -24,6 +24,7 @@ Update the system and install necessary packages:
 
 ```bash
 sudo apt update && sudo apt upgrade -y
+sudo apt install python3.9
 sudo apt install python3-pip python3-dev git -y
 ```
 
