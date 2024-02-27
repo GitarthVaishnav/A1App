@@ -131,7 +131,7 @@ def generate_unique_list(input_number):
             "p",
             "w",
         ]
-        # selected folders for A23
+        # selected folders for A24 (added sin, cos, tan, log, lim)
         big_set = [
             "leq",
             "geq",
@@ -153,6 +153,11 @@ def generate_unique_list(input_number):
             ")",
             "+",
             "-",
+            "sin",
+            "cos",
+            "tan",
+            "log",
+            "lim",
         ]
         return random.sample(big_set, 10)
     except Exception as e:
