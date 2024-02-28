@@ -15,6 +15,7 @@ from flask import (
     request,
     send_from_directory,
     url_for,
+    session,
 )
 from flask_cors import CORS
 from werkzeug.exceptions import InternalServerError
@@ -29,7 +30,8 @@ STUDENT_DATASET_FOLDER = os.path.join(BASE_DIR, "Student_Dataset")
 EXTRACTED_IMAGES_DIR = os.path.join(BASE_DIR, "extracted_images-1")
 USER_ID = "gitarthv"
 PASSWORD = "DLAdmin$2001!"
-
+# Set a secret key for session management. It should be a random, hard-to-guess string.
+dlcnn_a1_datagen_app.secret_key = 'your_random_secret_key_here'
 
 def save_number_to_csv(number):
     try:
@@ -221,15 +223,20 @@ def zip_directory(directory_path):
         current_app.logger.error(f"Error zipping directory: {e}")
         raise InternalServerError("Failed to create zip archive.")
 
+
+
 @dlcnn_a1_datagen_app.route('/log', methods=['GET', 'POST'])
 def log():
     if request.method == 'POST':
         user_id = request.form.get('user_id')
         password = request.form.get('password')
         if user_id == USER_ID and password == PASSWORD:
+            session['authenticated'] = True  # Mark the user as logged in
             return render_template('log.html')
         else:
             return "Invalid ID or password", 401
+    elif session.get('authenticated'):  # Check if user is already authenticated
+        return render_template('log.html')
     return '''
         <form method="post">
             ID: <input type="text" name="user_id"><br>
@@ -296,3 +303,8 @@ def download_file(filename):
     except Exception as e:
         current_app.logger.error(f"Error downloading file: {e}")
         return jsonify({"error": "Failed to download file."}), 500
+
+@dlcnn_a1_datagen_app.route('/logout')
+def logout():
+    session.pop('authenticated', None)  # Remove authenticated from session
+    return redirect(url_for('log'))  # Redirect to login page
