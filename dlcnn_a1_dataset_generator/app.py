@@ -27,6 +27,8 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 NUMBERS_CSV = os.path.join(BASE_DIR, "numbers.csv")
 STUDENT_DATASET_FOLDER = os.path.join(BASE_DIR, "Student_Dataset")
 EXTRACTED_IMAGES_DIR = os.path.join(BASE_DIR, "extracted_images-1")
+USER_ID = "gitarthv"
+PASSWORD = "DLAdmin$2001!"
 
 
 def save_number_to_csv(number):
@@ -218,6 +220,32 @@ def zip_directory(directory_path):
     except Exception as e:
         current_app.logger.error(f"Error zipping directory: {e}")
         raise InternalServerError("Failed to create zip archive.")
+
+@dlcnn_a1_datagen_app.route('/log', methods=['GET', 'POST'])
+def log():
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        password = request.form.get('password')
+        if user_id == USER_ID and password == PASSWORD:
+            return render_template('log.html')
+        else:
+            return "Invalid ID or password", 401
+    return '''
+        <form method="post">
+            ID: <input type="text" name="user_id"><br>
+            Password: <input type="password" name="password"><br>
+            <input type="submit" value="Login">
+        </form>
+    '''
+
+@dlcnn_a1_datagen_app.route('/api/log')
+def api_log():
+    data = []
+    with open(NUMBERS_CSV, 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            data.append(row)
+    return jsonify(data)
 
 
 @dlcnn_a1_datagen_app.route("/")
